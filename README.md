@@ -7,6 +7,8 @@ Coded with gpt-5.6-sol.
 
 ![Screencast Keys showing the Shift key and an active mouse button in FreeCAD](docs/images/screenshot1.png)
 
+![Screencast Keys preferences in FreeCAD](docs/images/screenshot2.png)
+
 ## Quick start
 
 Restart FreeCAD, then open **Edit → Preferences → Screencast Keys**. Use
