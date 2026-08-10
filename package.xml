@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<package format="1" xmlns="https://wiki.freecad.org/Package_Metadata">
+  <name>Screencast Keys</name>
+  <description>Display keyboard and mouse input in a configurable FreeCAD window corner.</description>
+  <version>0.1.0</version>
+  <date>2026-08-09</date>
+  <maintainer>FreeCAD Screencast Keys contributors</maintainer>
+  <license file="LICENSE">GPL-3.0-only</license>
+  <icon>Resources/icons/screencast-keys.svg</icon>
+  <content>
+    <workbench>
+      <name>ScreencastKeys</name>
+      <subdirectory>./</subdirectory>
+      <tag>screencast</tag>
+      <tag>keyboard</tag>
+      <tag>mouse</tag>
+    </workbench>
+  </content>
+</package>
