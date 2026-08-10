@@ -11,8 +11,8 @@ Coded with gpt-5.6-sol.
 
 ## Quick start
 
-Restart FreeCAD, then open **Edit → Preferences → Screencast Keys**. Use
-**Show Screencast Keys overlay now** to show or hide the overlay and configure
+Restart FreeCAD, the addon should now be active on the bottom right corner.
+Go to **Edit → Preferences → Screencast Keys** to configure
 its position and appearance on the same page.
 
 The add-on is inspired by Blender's [Screencast Keys](https://github.com/nutti/Screencast-Keys) and is independently
