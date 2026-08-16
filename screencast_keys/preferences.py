@@ -43,10 +43,12 @@ class ScreencastKeysPreferencesPage:
         self.enabled_now = QtWidgets.QCheckBox("Show Screencast Keys overlay")
         self.enable_startup = QtWidgets.QCheckBox("Enable when FreeCAD starts")
         self.show_mouse_icon = QtWidgets.QCheckBox("Show mouse button status")
+        self.show_mouse_labels = QtWidgets.QCheckBox("Show mouse click text (LMB, MMB, RMB)")
         self.repeat_count = QtWidgets.QCheckBox("Combine consecutive events (for example, Tab ×5)")
         behavior_layout.addRow(self.enabled_now)
         behavior_layout.addRow(self.enable_startup)
         behavior_layout.addRow(self.show_mouse_icon)
+        behavior_layout.addRow(self.show_mouse_labels)
         behavior_layout.addRow(self.repeat_count)
 
         appearance = QtWidgets.QGroupBox("Position and appearance")
@@ -71,6 +73,11 @@ class ScreencastKeysPreferencesPage:
         self.display_time.setDecimals(2)
         self.display_time.setSingleStep(0.25)
         self.display_time.setSuffix(" s")
+        self.mouse_display_time = QtWidgets.QDoubleSpinBox()
+        self.mouse_display_time.setRange(0.1, 30.0)
+        self.mouse_display_time.setDecimals(2)
+        self.mouse_display_time.setSingleStep(0.1)
+        self.mouse_display_time.setSuffix(" s")
         self.max_history = self._spin(1, 20, " events")
         self.background_opacity = self._spin(0, 100, " %")
         self.background_color = ColorButton("Choose background color", self.form)
@@ -82,7 +89,8 @@ class ScreencastKeysPreferencesPage:
         form.addRow("Distance y from corner:", self.margin_y)
         form.addRow("Keyboard font size:", self.font_size)
         form.addRow("Mouse icon width:", self.mouse_size)
-        form.addRow("Event display time:", self.display_time)
+        form.addRow("Keyboard event display time:", self.display_time)
+        form.addRow("Mouse click display time:", self.mouse_display_time)
         form.addRow("Maximum history:", self.max_history)
         form.addRow("Background opacity:", self.background_opacity)
         form.addRow("Background color:", self.background_color)
@@ -117,6 +125,7 @@ class ScreencastKeysPreferencesPage:
         self.enabled_now.setChecked(controller.enabled if controller else values.enable_on_startup)
         self.enable_startup.setChecked(values.enable_on_startup)
         self.show_mouse_icon.setChecked(values.show_mouse_icon)
+        self.show_mouse_labels.setChecked(values.show_mouse_labels)
         self.repeat_count.setChecked(values.repeat_count)
         index = self.corner.findData(values.corner)
         self.corner.setCurrentIndex(max(0, index))
@@ -127,6 +136,7 @@ class ScreencastKeysPreferencesPage:
         self.font_size.setValue(values.font_size)
         self.mouse_size.setValue(values.mouse_size)
         self.display_time.setValue(values.display_time)
+        self.mouse_display_time.setValue(values.mouse_display_time)
         self.max_history.setValue(values.max_history)
         self.background_opacity.setValue(values.background_opacity)
         self.background_color.set_color(values.background_color)
@@ -142,8 +152,10 @@ class ScreencastKeysPreferencesPage:
             font_size=self.font_size.value(),
             mouse_size=self.mouse_size.value(),
             display_time=self.display_time.value(),
+            mouse_display_time=self.mouse_display_time.value(),
             max_history=self.max_history.value(),
             show_mouse_icon=self.show_mouse_icon.isChecked(),
+            show_mouse_labels=self.show_mouse_labels.isChecked(),
             repeat_count=self.repeat_count.isChecked(),
             enable_on_startup=self.enable_startup.isChecked(),
             background_color=self.background_color.color.name(),

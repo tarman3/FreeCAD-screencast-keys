@@ -15,8 +15,10 @@ class OverlaySettings:
     font_size: int = 22
     mouse_size: int = 54
     display_time: float = 2.5
+    mouse_display_time: float = 1.0
     max_history: int = 5
     show_mouse_icon: bool = True
+    show_mouse_labels: bool = False
     repeat_count: bool = True
     enable_on_startup: bool = True
     background_color: str = "#20242b"
@@ -60,8 +62,13 @@ def load():
         font_size=max(8, min(96, _get("GetInt", "FontSize", 22))),
         mouse_size=max(24, min(200, _get("GetInt", "MouseSize", 54))),
         display_time=max(0.25, min(30.0, _get("GetFloat", "DisplayTime", 2.5))),
+        mouse_display_time=max(
+            0.1,
+            min(30.0, _get("GetFloat", "MouseDisplayTime", 1.0)),
+        ),
         max_history=max(1, min(20, _get("GetInt", "MaxHistory", 5))),
         show_mouse_icon=_get("GetBool", "ShowMouseIcon", True),
+        show_mouse_labels=_get("GetBool", "ShowMouseLabels", False),
         repeat_count=_get("GetBool", "RepeatCount", True),
         enable_on_startup=_get("GetBool", "EnableOnStartup", True),
         background_color=_get("GetString", "BackgroundColor", "#20242b"),
@@ -82,8 +89,10 @@ def save(values):
         "FontSize": ("SetInt", values.font_size),
         "MouseSize": ("SetInt", values.mouse_size),
         "DisplayTime": ("SetFloat", values.display_time),
+        "MouseDisplayTime": ("SetFloat", values.mouse_display_time),
         "MaxHistory": ("SetInt", values.max_history),
         "ShowMouseIcon": ("SetBool", values.show_mouse_icon),
+        "ShowMouseLabels": ("SetBool", values.show_mouse_labels),
         "RepeatCount": ("SetBool", values.repeat_count),
         "EnableOnStartup": ("SetBool", values.enable_on_startup),
         "BackgroundColor": ("SetString", values.background_color),

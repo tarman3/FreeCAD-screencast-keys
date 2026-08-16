@@ -9,6 +9,7 @@ class DisplayEvent:
     label: str
     created: float
     expires: float
+    duration: float
     count: int = 1
 
     def display_text(self, show_repeat=True):
@@ -31,16 +32,18 @@ class EventHistory:
         self.duration = max(0.01, float(duration))
         self.events = self.events[-self.maximum :]
 
-    def add(self, label, combine=True):
+    def add(self, label, combine=True, duration=None):
         now = self._clock()
         self.expire(now)
+        event_duration = self.duration if duration is None else max(0.01, float(duration))
         if combine and self.events and self.events[-1].label == label:
             event = self.events[-1]
             event.count += 1
             event.created = now
-            event.expires = now + self.duration
+            event.expires = now + event_duration
+            event.duration = event_duration
         else:
-            event = DisplayEvent(label, now, now + self.duration)
+            event = DisplayEvent(label, now, now + event_duration, event_duration)
             self.events.append(event)
             self.events = self.events[-self.maximum :]
         return event
@@ -61,5 +64,5 @@ class EventHistory:
         """Fade only during the final quarter of an event's lifetime."""
         now = self.now() if now is None else now
         remaining = event.expires - now
-        fade_window = max(0.1, self.duration * 0.25)
+        fade_window = max(0.1, event.duration * 0.25)
         return max(0.0, min(1.0, remaining / fade_window))

@@ -30,7 +30,12 @@ class EventHistoryTest(unittest.TestCase):
         self.now = 11.75
         self.assertAlmostEqual(self.history.opacity(event), 0.5)
 
+    def test_event_can_override_display_duration(self):
+        event = self.history.add("LMB", duration=0.5)
+
+        self.assertAlmostEqual(event.expires - event.created, 0.5)
+        self.assertAlmostEqual(event.duration, 0.5)
+
 
 if __name__ == "__main__":
     unittest.main()
-

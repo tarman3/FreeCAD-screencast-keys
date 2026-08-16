@@ -9,6 +9,7 @@ class ScreencastOverlay(QtWidgets.QWidget):
         self.history = history
         self.settings = settings
         self.pressed_buttons = set()
+        self.button_expires = {}
         self.scroll_direction = None
         self.scroll_expires = 0.0
         self.setObjectName("ScreencastKeysOverlay")
@@ -23,12 +24,28 @@ class ScreencastOverlay(QtWidgets.QWidget):
         self.refresh_geometry()
         self.update()
 
-    def set_button(self, button, pressed):
+    def set_button(self, button, pressed, duration=0.0):
         if pressed:
             self.pressed_buttons.add(button)
+            self.button_expires.pop(button, None)
+        elif duration > 0.0:
+            self.pressed_buttons.add(button)
+            self.button_expires[button] = self.history.now() + duration
         else:
             self.pressed_buttons.discard(button)
+            self.button_expires.pop(button, None)
         self.update()
+
+    def expire_buttons(self, now=None):
+        now = self.history.now() if now is None else now
+        expired = [button for button, deadline in self.button_expires.items() if now >= deadline]
+        for button in expired:
+            self.button_expires.pop(button, None)
+            self.pressed_buttons.discard(button)
+        if expired:
+            self.update()
+            return True
+        return False
 
     def show_scroll(self, direction, duration=0.6):
         self.scroll_direction = direction
@@ -45,6 +62,7 @@ class ScreencastOverlay(QtWidgets.QWidget):
 
     def clear_input_state(self):
         self.pressed_buttons.clear()
+        self.button_expires.clear()
         self.scroll_direction = None
         self.scroll_expires = 0.0
         self.update()

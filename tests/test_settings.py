@@ -23,6 +23,17 @@ class SettingsTest(unittest.TestCase):
 
         self.assertEqual(settings.load().keyboard_side, "left")
 
+    def test_mouse_display_preferences_are_saved_and_loaded(self):
+        values = settings.OverlaySettings(
+            mouse_display_time=1.75,
+            show_mouse_labels=True,
+        )
+        settings.save(values)
+
+        loaded = settings.load()
+        self.assertAlmostEqual(loaded.mouse_display_time, 1.75)
+        self.assertTrue(loaded.show_mouse_labels)
+
 
 if __name__ == "__main__":
     unittest.main()

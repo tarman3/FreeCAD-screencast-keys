@@ -136,6 +136,13 @@ def mouse_button_name(button):
     return mapping.get(value)
 
 
+MOUSE_BUTTON_LABELS = {
+    "left": "LMB",
+    "middle": "MMB",
+    "right": "RMB",
+}
+
+
 class ScreencastController(QtCore.QObject):
     def __init__(self, main_window, application=None):
         super().__init__(main_window)
@@ -209,6 +216,7 @@ class ScreencastController(QtCore.QObject):
 
     def _tick(self):
         changed = self.history.expire()
+        self.overlay.expire_buttons()
         self.overlay.expire_scroll()
         self._ensure_target()
         if changed:
@@ -216,10 +224,10 @@ class ScreencastController(QtCore.QObject):
         else:
             self.overlay.update()
 
-    def _add_history(self, label, combine=True):
+    def _add_history(self, label, combine=True, duration=None):
         if not label:
             return None
-        event = self.history.add(label, combine=combine)
+        event = self.history.add(label, combine=combine, duration=duration)
         self.overlay.refresh_geometry()
         self.overlay.raise_()
         return event
@@ -233,6 +241,7 @@ class ScreencastController(QtCore.QObject):
             event = self.history.events[-1]
             event.created = now
             event.expires = now + self.history.duration
+            event.duration = self.history.duration
         else:
             self.history.add("Protected input", combine=False)
         self.overlay.refresh_geometry()
@@ -245,6 +254,7 @@ class ScreencastController(QtCore.QObject):
         now = self.history.now()
         event.created = now
         event.expires = now + self.history.duration
+        event.duration = self.history.duration
         self._held_modifier_event = None
         self._held_modifier_is_chord = False
         self.overlay.refresh_geometry()
@@ -295,6 +305,7 @@ class ScreencastController(QtCore.QObject):
                     last.expires = float("inf")
                 else:
                     last.expires = now + self.history.duration
+                    last.duration = self.history.duration
                 self.overlay.refresh_geometry()
                 self.overlay.raise_()
                 return
@@ -433,12 +444,21 @@ class ScreencastController(QtCore.QObject):
             button = mouse_button_name(event.button())
             if button:
                 self.overlay.set_button(button, True)
+                if self.settings.show_mouse_labels:
+                    self._add_history(
+                        MOUSE_BUTTON_LABELS[button],
+                        duration=self.settings.mouse_display_time,
+                    )
         elif kind == event_type("MouseButtonRelease"):
             if self._is_propagated_duplicate(event, enum_int(event.button())):
                 return False
             button = mouse_button_name(event.button())
             if button:
-                self.overlay.set_button(button, False)
+                self.overlay.set_button(
+                    button,
+                    False,
+                    duration=self.settings.mouse_display_time,
+                )
         elif kind == event_type("Wheel"):
             delta = event.angleDelta()
             if self._is_propagated_duplicate(event, delta.x(), delta.y()):

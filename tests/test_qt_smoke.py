@@ -86,6 +86,39 @@ class QtSmokeTest(unittest.TestCase):
         self.controller.eventFilter(self.target, mouse_press(101))
         self.assertEqual(self.controller.history.events, [])
 
+    def test_mouse_label_and_post_click_highlight_use_mouse_duration(self):
+        self.controller.settings.show_mouse_labels = True
+        self.controller.settings.mouse_display_time = 0.75
+        press = QtGui.QMouseEvent(
+            event_type("MouseButtonPress"),
+            QtCore.QPointF(5, 5),
+            QtCore.QPointF(5, 5),
+            QtCore.QPointF(5, 5),
+            qt_value("LeftButton", "MouseButton"),
+            qt_value("LeftButton", "MouseButton"),
+            qt_value("NoModifier", "KeyboardModifier"),
+        )
+        release = QtGui.QMouseEvent(
+            event_type("MouseButtonRelease"),
+            QtCore.QPointF(5, 5),
+            QtCore.QPointF(5, 5),
+            QtCore.QPointF(5, 5),
+            qt_value("LeftButton", "MouseButton"),
+            qt_value("NoButton", "MouseButton"),
+            qt_value("NoModifier", "KeyboardModifier"),
+        )
+
+        self.controller.eventFilter(self.target, press)
+        mouse_event = self.controller.history.events[-1]
+        self.assertEqual(mouse_event.label, "LMB")
+        self.assertAlmostEqual(mouse_event.expires - mouse_event.created, 0.75)
+        self.controller.eventFilter(self.target, release)
+        self.assertIn("left", self.controller.overlay.pressed_buttons)
+        deadline = self.controller.overlay.button_expires["left"]
+        self.assertFalse(self.controller.overlay.expire_buttons(deadline - 0.01))
+        self.assertTrue(self.controller.overlay.expire_buttons(deadline + 0.01))
+        self.assertNotIn("left", self.controller.overlay.pressed_buttons)
+
     def test_propagated_key_event_is_counted_once(self):
         def space_event(kind, timestamp):
             event = QtGui.QKeyEvent(
@@ -237,7 +270,8 @@ class QtSmokeTest(unittest.TestCase):
 
     def test_bottom_right_position_tracks_parent(self):
         self.controller.settings.corner = "bottom_right"
-        self.controller.settings.margin = 20
+        self.controller.settings.margin_x = 20
+        self.controller.settings.margin_y = 20
         self.controller.overlay.refresh_geometry()
         position = self.controller.overlay.pos()
         self.assertEqual(position.x(), self.target.width() - self.controller.overlay.width() - 20)

@@ -59,13 +59,15 @@ pressing **Apply** or **OK**.
 | Show Screencast Keys overlay | Enables or disables the current overlay. |
 | Enable when FreeCAD starts | Controls automatic activation on future launches. |
 | Show mouse button status | Shows or hides the mouse visualization. |
+| Show mouse click text | Adds `LMB`, `MMB`, or `RMB` to the event history. |
 | Combine consecutive events | Displays repeated keys with a counter. |
 | Corner | Selects the top-left, top-right, bottom-left, or bottom-right position. |
 | Distance from corner | Adds space between the overlay and the window edge. |
 | Keyboard font size | Changes the size of displayed key names. |
 | Mouse icon width | Changes the size of the mouse visualization. |
 | Keyboard text position | Places keyboard events to the left or right of the mouse. |
-| Event display time | Controls how long keyboard events remain visible. |
+| Keyboard event display time | Controls how long keyboard events remain visible. |
+| Mouse click display time | Controls mouse-label duration and post-click icon highlighting. |
 | Maximum history | Limits the number of keyboard events shown together. |
 | Background opacity | Changes the transparency of the overlay panel. |
 | Colors | Configures the panel, text, outline, and active-button colors. |
