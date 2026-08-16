@@ -10,7 +10,8 @@ PARAM_PATH = "User parameter:BaseApp/Preferences/Mod/ScreencastKeys"
 class OverlaySettings:
     corner: str = "bottom_right"
     keyboard_side: str = "left"
-    margin: int = 24
+    margin_x: int = 24
+    margin_y: int = 24
     font_size: int = 22
     mouse_size: int = 54
     display_time: float = 2.5
@@ -54,7 +55,8 @@ def load():
     return OverlaySettings(
         corner=corner,
         keyboard_side=keyboard_side,
-        margin=max(0, min(500, _get("GetInt", "Margin", 24))),
+        margin_x=max(0, min(500, _get("GetInt", "MarginX", 24))),
+        margin_y=max(0, min(500, _get("GetInt", "MarginY", 24))),
         font_size=max(8, min(96, _get("GetInt", "FontSize", 22))),
         mouse_size=max(24, min(200, _get("GetInt", "MouseSize", 54))),
         display_time=max(0.25, min(30.0, _get("GetFloat", "DisplayTime", 2.5))),
@@ -75,7 +77,8 @@ def save(values):
     entries = {
         "Corner": ("SetString", values.corner),
         "KeyboardSide": ("SetString", values.keyboard_side),
-        "Margin": ("SetInt", values.margin),
+        "MarginX": ("SetInt", values.margin_x),
+        "MarginY": ("SetInt", values.margin_y),
         "FontSize": ("SetInt", values.font_size),
         "MouseSize": ("SetInt", values.mouse_size),
         "DisplayTime": ("SetFloat", values.display_time),

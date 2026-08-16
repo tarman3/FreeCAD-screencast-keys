@@ -77,9 +77,10 @@ class ScreencastOverlay(QtWidgets.QWidget):
         parent = self.parentWidget()
         if parent is None:
             return
-        margin = self.settings.margin
-        x = margin if self.settings.corner.endswith("left") else parent.width() - self.width() - margin
-        y = margin if self.settings.corner.startswith("top") else parent.height() - self.height() - margin
+        margin_x = self.settings.margin_x
+        margin_y = self.settings.margin_y
+        x = margin_x if self.settings.corner.endswith("left") else parent.width() - self.width() - margin_x
+        y = margin_y if self.settings.corner.startswith("top") else parent.height() - self.height() - margin_y
         self.move(max(0, x), max(0, y))
         self.raise_()
 
