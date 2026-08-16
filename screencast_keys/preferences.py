@@ -62,7 +62,8 @@ class ScreencastKeysPreferencesPage:
         self.keyboard_side = QtWidgets.QComboBox()
         self.keyboard_side.addItem("Left of mouse", "left")
         self.keyboard_side.addItem("Right of mouse", "right")
-        self.margin = self._spin(0, 500, " px")
+        self.margin_x = self._spin(0, 500, " px")
+        self.margin_y = self._spin(0, 500, " px")
         self.font_size = self._spin(8, 96, " pt")
         self.mouse_size = self._spin(24, 200, " px")
         self.display_time = QtWidgets.QDoubleSpinBox()
@@ -77,7 +78,8 @@ class ScreencastKeysPreferencesPage:
         self.accent_color = ColorButton("Choose pressed-button color", self.form)
         form.addRow("Corner:", self.corner)
         form.addRow("Keyboard text position:", self.keyboard_side)
-        form.addRow("Distance from corner:", self.margin)
+        form.addRow("Distance x from corner :", self.margin_x)
+        form.addRow("Distance y from corner:", self.margin_y)
         form.addRow("Keyboard font size:", self.font_size)
         form.addRow("Mouse icon width:", self.mouse_size)
         form.addRow("Event display time:", self.display_time)
@@ -120,7 +122,8 @@ class ScreencastKeysPreferencesPage:
         self.corner.setCurrentIndex(max(0, index))
         index = self.keyboard_side.findData(values.keyboard_side)
         self.keyboard_side.setCurrentIndex(max(0, index))
-        self.margin.setValue(values.margin)
+        self.margin_x.setValue(values.margin_x)
+        self.margin_y.setValue(values.margin_y)
         self.font_size.setValue(values.font_size)
         self.mouse_size.setValue(values.mouse_size)
         self.display_time.setValue(values.display_time)
@@ -134,7 +137,8 @@ class ScreencastKeysPreferencesPage:
         values = OverlaySettings(
             corner=self.corner.currentData(),
             keyboard_side=self.keyboard_side.currentData(),
-            margin=self.margin.value(),
+            margin_x=self.margin_x.value(),
+            margin_y=self.margin_y.value(),
             font_size=self.font_size.value(),
             mouse_size=self.mouse_size.value(),
             display_time=self.display_time.value(),
