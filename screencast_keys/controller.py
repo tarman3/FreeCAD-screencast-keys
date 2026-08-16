@@ -139,6 +139,7 @@ def mouse_button_name(button):
 class ScreencastController(QtCore.QObject):
     def __init__(self, main_window, application=None):
         super().__init__(main_window)
+        self.setObjectName("ScreencastKeys")
         self.main_window = main_window
         self.application = application or QtWidgets.QApplication.instance()
         self.settings = settings_store.load()

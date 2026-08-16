@@ -28,6 +28,11 @@ class QtSmokeTest(unittest.TestCase):
         self.window.close()
         self.app.processEvents()
 
+    def test_controller_is_discoverable_from_main_window(self):
+        found = self.window.findChild(QtCore.QObject, "ScreencastKeys")
+
+        self.assertIs(found, self.controller)
+
     def test_key_and_mouse_are_observed_without_consuming(self):
         key = QtGui.QKeyEvent(
             event_type("KeyPress"),

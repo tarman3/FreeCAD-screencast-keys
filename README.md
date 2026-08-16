@@ -38,6 +38,17 @@ The overlay starts automatically after installation. To show or hide it at any
 time, open **Edit → Preferences → Screencast Keys**, change **Show Screencast
 Keys overlay**, and press **Apply** or **OK**.
 
+The overlay can also be toggled from the Python console or a macro:
+
+```python
+import FreeCADGui
+from PySide import QtCore
+
+main_window = FreeCADGui.getMainWindow()
+if controller := main_window.findChild(QtCore.QObject, "ScreencastKeys"):
+    controller.toggle()
+```
+
 ## Preferences
 
 Open **Edit → Preferences → Screencast Keys**. Changes take effect after
