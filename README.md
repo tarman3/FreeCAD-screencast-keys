@@ -59,7 +59,7 @@ pressing **Apply** or **OK**.
 | Show Screencast Keys overlay | Enables or disables the current overlay. |
 | Enable when FreeCAD starts | Controls automatic activation on future launches. |
 | Show mouse button status | Shows or hides the mouse visualization. |
-| Show mouse click text | Adds `LMB`, `MMB`, or `RMB` to the event history. |
+| Show mouse click text | Enabled by default; adds `LMB`, `MMB`, or `RMB`, including held modifiers such as `Ctrl + LMB`. |
 | Combine consecutive events | Displays repeated keys with a counter. |
 | Corner | Selects the top-left, top-right, bottom-left, or bottom-right position. |
 | Distance from corner | Adds space between the overlay and the window edge. |

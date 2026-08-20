@@ -34,6 +34,9 @@ class SettingsTest(unittest.TestCase):
         self.assertAlmostEqual(loaded.mouse_display_time, 1.75)
         self.assertTrue(loaded.show_mouse_labels)
 
+    def test_mouse_labels_are_enabled_by_default(self):
+        self.assertTrue(settings.load().show_mouse_labels)
+
 
 if __name__ == "__main__":
     unittest.main()

@@ -18,7 +18,7 @@ class OverlaySettings:
     mouse_display_time: float = 1.0
     max_history: int = 5
     show_mouse_icon: bool = True
-    show_mouse_labels: bool = False
+    show_mouse_labels: bool = True
     repeat_count: bool = True
     enable_on_startup: bool = True
     background_color: str = "#20242b"
@@ -68,7 +68,7 @@ def load():
         ),
         max_history=max(1, min(20, _get("GetInt", "MaxHistory", 5))),
         show_mouse_icon=_get("GetBool", "ShowMouseIcon", True),
-        show_mouse_labels=_get("GetBool", "ShowMouseLabels", False),
+        show_mouse_labels=_get("GetBool", "ShowMouseLabels", True),
         repeat_count=_get("GetBool", "RepeatCount", True),
         enable_on_startup=_get("GetBool", "EnableOnStartup", True),
         background_color=_get("GetString", "BackgroundColor", "#20242b"),

@@ -51,12 +51,16 @@ class QtSmokeTest(unittest.TestCase):
             qt_value("NoModifier", "KeyboardModifier"),
         )
         QtWidgets.QApplication.sendEvent(self.target, press)
-        self.assertEqual(self.controller.history.events[0].label, "Ctrl + S")
-        self.assertEqual(len(self.controller.history.events), 1)
+        self.assertEqual(
+            [event.label for event in self.controller.history.events],
+            ["Ctrl + S", "LMB"],
+        )
         self.assertIn("left", self.controller.overlay.pressed_buttons)
         self.assertTrue(self.controller.overlay.isVisible())
 
     def test_propagated_mouse_event_is_counted_once(self):
+        self.controller.settings.show_mouse_labels = False
+
         def mouse_press(timestamp):
             event = QtGui.QMouseEvent(
                 event_type("MouseButtonPress"),
@@ -118,6 +122,42 @@ class QtSmokeTest(unittest.TestCase):
         self.assertFalse(self.controller.overlay.expire_buttons(deadline - 0.01))
         self.assertTrue(self.controller.overlay.expire_buttons(deadline + 0.01))
         self.assertNotIn("left", self.controller.overlay.pressed_buttons)
+
+    def test_mouse_label_includes_held_keyboard_modifier(self):
+        self.controller.settings.show_mouse_labels = True
+        self.controller.settings.mouse_display_time = 0.75
+        control = qt_value("ControlModifier", "KeyboardModifier")
+        no_modifier = qt_value("NoModifier", "KeyboardModifier")
+        control_key = qt_value("Key_Control", "Key")
+
+        self.controller.eventFilter(
+            self.target,
+            QtGui.QKeyEvent(event_type("KeyPress"), control_key, control, ""),
+        )
+        press = QtGui.QMouseEvent(
+            event_type("MouseButtonPress"),
+            QtCore.QPointF(5, 5),
+            QtCore.QPointF(5, 5),
+            QtCore.QPointF(5, 5),
+            qt_value("LeftButton", "MouseButton"),
+            qt_value("LeftButton", "MouseButton"),
+            control,
+        )
+        self.controller.eventFilter(self.target, press)
+
+        mouse_event = self.controller.history.events[-1]
+        self.assertEqual(
+            [event.label for event in self.controller.history.events],
+            ["Ctrl + LMB"],
+        )
+        self.assertTrue(math.isinf(mouse_event.expires))
+
+        self.controller.eventFilter(
+            self.target,
+            QtGui.QKeyEvent(event_type("KeyRelease"), control_key, no_modifier, ""),
+        )
+        self.assertAlmostEqual(mouse_event.expires - mouse_event.created, 0.75)
+        self.assertAlmostEqual(mouse_event.duration, 0.75)
 
     def test_propagated_key_event_is_counted_once(self):
         def space_event(kind, timestamp):

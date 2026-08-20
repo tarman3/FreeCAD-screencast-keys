@@ -67,19 +67,7 @@ def _has_modifier(modifiers, name):
     return bool(enum_int(modifiers) & enum_int(flag))
 
 
-def key_event_text(event, held_modifier_keys=()):
-    """Create a compact, platform-neutral label from a QKeyEvent."""
-    key = enum_int(event.key())
-    base = SPECIAL_KEYS.get(key)
-    if base is None:
-        base = QtGui.QKeySequence(key).toString(QtGui.QKeySequence.NativeText)
-    if not base:
-        text = event.text()
-        base = text.upper() if text and text.isprintable() else "Unknown"
-
-    if key in MODIFIER_KEYS:
-        return base
-
+def _modifier_parts(modifiers, held_modifier_keys=()):
     held_labels = {
         MODIFIER_KEYS[enum_int(held_key)]
         for held_key in held_modifier_keys
@@ -93,8 +81,25 @@ def key_event_text(event, held_modifier_keys=()):
         ("MetaModifier", "Cmd" if sys.platform == "darwin" else "Meta"),
     ):
         held_label = "Meta" if label == "Cmd" else label
-        if _has_modifier(event.modifiers(), flag) or held_label in held_labels:
+        if _has_modifier(modifiers, flag) or held_label in held_labels:
             parts.append(label)
+    return parts
+
+
+def key_event_text(event, held_modifier_keys=()):
+    """Create a compact, platform-neutral label from a QKeyEvent."""
+    key = enum_int(event.key())
+    base = SPECIAL_KEYS.get(key)
+    if base is None:
+        base = QtGui.QKeySequence(key).toString(QtGui.QKeySequence.NativeText)
+    if not base:
+        text = event.text()
+        base = text.upper() if text and text.isprintable() else "Unknown"
+
+    if key in MODIFIER_KEYS:
+        return base
+
+    parts = _modifier_parts(event.modifiers(), held_modifier_keys)
     if base == "Shift + Tab" and "Shift" in parts:
         parts.remove("Shift")
     parts.append(base)
@@ -143,6 +148,12 @@ MOUSE_BUTTON_LABELS = {
 }
 
 
+def mouse_event_text(event, button, held_modifier_keys=()):
+    parts = _modifier_parts(event.modifiers(), held_modifier_keys)
+    parts.append(MOUSE_BUTTON_LABELS[button])
+    return " + ".join(parts)
+
+
 class ScreencastController(QtCore.QObject):
     def __init__(self, main_window, application=None):
         super().__init__(main_window)
@@ -161,6 +172,7 @@ class ScreencastController(QtCore.QObject):
         self._pressed_keys = set()
         self._held_modifier_event = None
         self._held_modifier_is_chord = False
+        self._held_modifier_duration = None
 
         self._timer = QtCore.QTimer(self)
         self._timer.setInterval(50)
@@ -196,6 +208,7 @@ class ScreencastController(QtCore.QObject):
             self._pressed_keys.clear()
             self._held_modifier_event = None
             self._held_modifier_is_chord = False
+            self._held_modifier_duration = None
             self.overlay.hide()
 
     def toggle(self):
@@ -252,14 +265,16 @@ class ScreencastController(QtCore.QObject):
         if event is None:
             return
         now = self.history.now()
+        duration = self._held_modifier_duration or self.history.duration
         event.created = now
-        event.expires = now + self.history.duration
-        event.duration = self.history.duration
+        event.expires = now + duration
+        event.duration = duration
         self._held_modifier_event = None
         self._held_modifier_is_chord = False
+        self._held_modifier_duration = None
         self.overlay.refresh_geometry()
 
-    def _show_held_modifier_event(self, label, is_chord):
+    def _show_held_modifier_event(self, label, is_chord, duration=None):
         """Show a modifier label without allowing it to expire while held."""
         if not label:
             return
@@ -275,12 +290,15 @@ class ScreencastController(QtCore.QObject):
             self._finish_held_modifier_event()
             event = None
         if event is None:
-            event = self._add_history(label, combine=False)
+            event = self._add_history(label, combine=False, duration=duration)
         now = self.history.now()
+        display_duration = self.history.duration if duration is None else duration
         event.created = now
         event.expires = float("inf")
+        event.duration = display_duration
         self._held_modifier_event = event
         self._held_modifier_is_chord = is_chord
+        self._held_modifier_duration = duration if is_chord else None
         self.overlay.refresh_geometry()
         self.overlay.raise_()
 
@@ -445,10 +463,19 @@ class ScreencastController(QtCore.QObject):
             if button:
                 self.overlay.set_button(button, True)
                 if self.settings.show_mouse_labels:
-                    self._add_history(
-                        MOUSE_BUTTON_LABELS[button],
-                        duration=self.settings.mouse_display_time,
-                    )
+                    held_modifiers = self._pressed_keys.intersection(MODIFIER_KEYS)
+                    label = mouse_event_text(event, button, held_modifiers)
+                    if held_modifiers:
+                        self._show_held_modifier_event(
+                            label,
+                            is_chord=True,
+                            duration=self.settings.mouse_display_time,
+                        )
+                    else:
+                        self._add_history(
+                            label,
+                            duration=self.settings.mouse_display_time,
+                        )
         elif kind == event_type("MouseButtonRelease"):
             if self._is_propagated_duplicate(event, enum_int(event.button())):
                 return False
