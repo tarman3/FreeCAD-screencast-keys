@@ -123,8 +123,9 @@ class QtSmokeTest(unittest.TestCase):
         self.assertTrue(self.controller.overlay.expire_buttons(deadline + 0.01))
         self.assertNotIn("left", self.controller.overlay.pressed_buttons)
 
-    def test_mouse_label_includes_held_keyboard_modifier(self):
+    def test_mouse_label_includes_modifier_and_uses_longer_duration(self):
         self.controller.settings.show_mouse_labels = True
+        self.controller.settings.display_time = 2.5
         self.controller.settings.mouse_display_time = 0.75
         control = qt_value("ControlModifier", "KeyboardModifier")
         no_modifier = qt_value("NoModifier", "KeyboardModifier")
@@ -156,8 +157,8 @@ class QtSmokeTest(unittest.TestCase):
             self.target,
             QtGui.QKeyEvent(event_type("KeyRelease"), control_key, no_modifier, ""),
         )
-        self.assertAlmostEqual(mouse_event.expires - mouse_event.created, 0.75)
-        self.assertAlmostEqual(mouse_event.duration, 0.75)
+        self.assertAlmostEqual(mouse_event.expires - mouse_event.created, 2.5)
+        self.assertAlmostEqual(mouse_event.duration, 2.5)
 
     def test_propagated_key_event_is_counted_once(self):
         def space_event(kind, timestamp):

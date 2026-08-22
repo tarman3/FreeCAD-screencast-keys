@@ -469,7 +469,10 @@ class ScreencastController(QtCore.QObject):
                         self._show_held_modifier_event(
                             label,
                             is_chord=True,
-                            duration=self.settings.mouse_display_time,
+                            duration=max(
+                                self.settings.display_time,
+                                self.settings.mouse_display_time,
+                            ),
                         )
                     else:
                         self._add_history(

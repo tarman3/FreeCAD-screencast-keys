@@ -78,6 +78,9 @@ class ScreencastKeysPreferencesPage:
         self.mouse_display_time.setDecimals(2)
         self.mouse_display_time.setSingleStep(0.1)
         self.mouse_display_time.setSuffix(" s")
+        self.mouse_display_time.setToolTip(
+            "Keyboard + mouse combinations use the longer of the keyboard and mouse times."
+        )
         self.max_history = self._spin(1, 20, " events")
         self.background_opacity = self._spin(0, 100, " %")
         self.background_color = ColorButton("Choose background color", self.form)

@@ -67,7 +67,7 @@ pressing **Apply** or **OK**.
 | Mouse icon width | Changes the size of the mouse visualization. |
 | Keyboard text position | Places keyboard events to the left or right of the mouse. |
 | Keyboard event display time | Controls how long keyboard events remain visible. |
-| Mouse click display time | Controls mouse-label duration and post-click icon highlighting. |
+| Mouse click display time | Controls mouse-label duration and post-click icon highlighting. Combined keyboard and mouse events use the longer configured time. |
 | Maximum history | Limits the number of keyboard events shown together. |
 | Background opacity | Changes the transparency of the overlay panel. |
 | Colors | Configures the panel, text, outline, and active-button colors. |
