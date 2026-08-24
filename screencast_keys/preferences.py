@@ -32,6 +32,7 @@ class ColorButton(QtWidgets.QPushButton):
 class ScreencastKeysPreferencesPage:
     def __init__(self, parent=None):
         self.form = QtWidgets.QWidget(parent)
+        self.form.setWindowTitle("General")
         self._build_ui()
 
     def _build_ui(self):
